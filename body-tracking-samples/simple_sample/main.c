@@ -18,17 +18,14 @@
 
 void print_body_information(k4abt_body_t body)
 {
-    printf("Body ID: %u\n", body.id);
     for (int i = 0; i < (int)K4ABT_JOINT_COUNT; i++)
     {
         k4a_float3_t position = body.skeleton.joints[i].position;
-        k4a_quaternion_t orientation = body.skeleton.joints[i].orientation;
         k4abt_joint_confidence_level_t confidence_level = body.skeleton.joints[i].confidence_level;
-        printf("Joint[%d]: Position[mm] ( %f, %f, %f ); Orientation ( %f, %f, %f, %f); Confidence Level (%d) \n",
-            i, position.v[0], position.v[1], position.v[2], orientation.v[0], orientation.v[1], orientation.v[2], orientation.v[3], confidence_level);
+        printf("joint %d x %d y %d z %d confidence %d \n",
+            i, (int)position.v[0], (int)position.v[1], (int)position.v[2], confidence_level);
     }
 }
-
 void print_body_index_map_middle_line(k4a_image_t body_index_map)
 {
     uint8_t* body_index_map_buffer = k4a_image_get_buffer(body_index_map);
