@@ -55,10 +55,7 @@ int main()
             frame_count++;
 
             //k4a_wait_result_t queue_capture_result = k4abt_tracker_enqueue_capture(tracker, sensor_capture, K4A_WAIT_INFINITE);
-            k4a_image_t color_img = k4a_capture_get_color_image(&sensor_capture); 
-            int color_width = k4a_image_get_width_pixels(color_img); 
-            int color_height = k4a_image_get_height_pixels(color_img); 
-            printf("%d %d",color_width,  color_height);
+            k4a_image_t color_img = k4a_capture_get_color_image(sensor_capture); 
             k4a_capture_release(sensor_capture);
             continue;
             /*
