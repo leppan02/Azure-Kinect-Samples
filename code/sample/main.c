@@ -26,33 +26,11 @@ void print_body_information(k4abt_body_t body)
             i, (int)position.v[0], (int)position.v[1], (int)position.v[2], confidence_level);
     }
 }
-void print_body_index_map_middle_line(k4a_image_t body_index_map)
-{
-    uint8_t* body_index_map_buffer = k4a_image_get_buffer(body_index_map);
-
-    // Given body_index_map pixel type should be uint8, the stride_byte should be the same as width
-    // TODO: Since there is no API to query the byte-per-pixel information, we have to compare the width and stride to
-    // know the information. We should replace this assert with proper byte-per-pixel query once the API is provided by
-    // K4A SDK.
-    assert(k4a_image_get_stride_bytes(body_index_map) == k4a_image_get_width_pixels(body_index_map));
-
-    int middle_line_num = k4a_image_get_height_pixels(body_index_map) / 2;
-    body_index_map_buffer = body_index_map_buffer + middle_line_num * k4a_image_get_width_pixels(body_index_map);
-
-    printf("BodyIndexMap at Line %d:\n", middle_line_num);
-    for (int i = 0; i < k4a_image_get_width_pixels(body_index_map); i++)
-    {
-        printf("%u, ", *body_index_map_buffer);
-        body_index_map_buffer++;
-    }
-    printf("\n");
-}
 
 int main()
 {
     k4a_device_configuration_t device_config = K4A_DEVICE_CONFIG_INIT_DISABLE_ALL;
     device_config.depth_mode = K4A_DEPTH_MODE_NFOV_UNBINNED;
-
     k4a_device_t device;
     VERIFY(k4a_device_open(0, &device), "Open K4A Device failed!");
     VERIFY(k4a_device_start_cameras(device, &device_config), "Start K4A cameras failed!");
@@ -63,6 +41,8 @@ int main()
 
     k4abt_tracker_t tracker = NULL;
     k4abt_tracker_configuration_t tracker_config = K4ABT_TRACKER_CONFIG_DEFAULT;
+    tracker_config.processing_mode = K4ABT_TRACKER_PROCESSING_MODE_CPU;
+
     VERIFY(k4abt_tracker_create(&sensor_calibration, tracker_config, &tracker), "Body tracker initialization failed!");
 
     int frame_count = 0;
@@ -107,16 +87,6 @@ int main()
                     print_body_information(body);
                 }
 
-                k4a_image_t body_index_map = k4abt_frame_get_body_index_map(body_frame);
-                if (body_index_map != NULL)
-                {
-                    print_body_index_map_middle_line(body_index_map);
-                    k4a_image_release(body_index_map);
-                }
-                else
-                {
-                    printf("Error: Fail to generate bodyindex map!\n");
-                }
 
                 k4abt_frame_release(body_frame);
             }
@@ -144,7 +114,7 @@ int main()
             break;
         }
 
-    } while (frame_count < 100);
+    } while (frame_count < 1);
 
     printf("Finished body tracking processing!\n");
 
