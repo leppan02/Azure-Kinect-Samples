@@ -95,7 +95,7 @@ static void write_point_cloud(const k4a_image_t point_cloud, int point_count) {
 }
 
 static void print_body_information(k4abt_body_t body) {
-  printf("body");
+  printf("body detected\n");
   std::ofstream ofs("joint.data");  // text mode first
   ofs << "joint_id,x,y,z,confidence" << std::endl;
   ofs.close();
